@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerAuthController extends Controller
 {
-    
+
      public function login(Request $request)
     {
           $validator = Validator::make($request->all(), [
@@ -28,7 +28,7 @@ class CustomerAuthController extends Controller
             'phone' => $request->phone,
             'password' => $request->password
         ];
-        
+
         if (auth()->attempt($data)) {
             //auth()->user() is coming from laravel auth:api middleware
             $token = auth()->user()->createToken('RestaurantCustomerAuth')->accessToken;
@@ -40,7 +40,7 @@ class CustomerAuthController extends Controller
                     'errors' => $errors
                 ], 403);
             }
-          
+
             return response()->json(['token' => $token, 'is_phone_verified'=>auth()->user()->is_phone_verified], 200);
         } else {
             $errors = [];
@@ -50,7 +50,7 @@ class CustomerAuthController extends Controller
             ], 401);
         }
     }
-    
+
         public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -64,6 +64,10 @@ class CustomerAuthController extends Controller
             'phone.required' => 'The  phone field is required.',
         ]);
 
+
+        // if($validator->fails()){
+        //     return response() -> json(['errors' => Helpers::error_processor($validator)], 403);
+        // }
         if ($validator->fails()) {
             return response()->json(['errors' => "Failed Validation"], 403);
         }
@@ -77,7 +81,7 @@ class CustomerAuthController extends Controller
 
         $token = $user->createToken('RestaurantCustomerAuth')->accessToken;
 
-       
+
         return response()->json(['token' => $token,'is_phone_verified' => 0, 'phone_verify_end_url'=>"api/v1/auth/verify-phone" ], 200);
     }
 }
